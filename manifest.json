@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Stay Focused - Disable Visibility API",
+  "version": "0.1",
+  "description": "Forces document to stay visible",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["disable.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "48": "icon@48.png",
+    "96": "icon@96.png",
+    "128": "icon@128.png"
+  }
+}
