@@ -3,8 +3,7 @@
 This Firefox add-on prevents websites from detecting when you switch tabs or minimize the browser by disabling the Page Visibility API. Useful for keeping music playing, dashboards updating, and monitoring pages active even when not in focus.
 
 ## Qick start 
-1. Just download it from https://addons.mozilla.org/en-US/firefox/addon/stay-focused-addon/
-2. Enjoy)
+Just download it from https://addons.mozilla.org/en-US/firefox/addon/stay-focused-addon/
 
 ## Features
 - Disables `document.hidden`, `document.visibilityState`, and `document.webkitHidden`
