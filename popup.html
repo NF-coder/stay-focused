@@ -9,17 +9,11 @@
     }
     body {
       font-family: sans-serif;
-      min-width: 250px;
-      padding: 8px;
-    }
-    .button-group {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 10px;
+      min-width: 300px;
+      padding: 10px;
     }
     button {
-      flex: 1;
-      padding: 6px;
+      padding: 6px 12px;
       font-size: 14px;
       outline: none;
       border: none;
@@ -28,49 +22,68 @@
     }
     #toggle {
       width: 100%;
+      margin-bottom: 10px;
     }
-    #add-domain {
-      background-color: #2196F3;
-      color: white;
+    .section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
     }
-    #add-domain:hover {
-      background-color: #0b7dda;
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 13px;
     }
-    .input-group {
+    .domain-input-group {
+      display: flex;
+      gap: 5px;
       margin-bottom: 8px;
     }
-    input {
-      width: 100%;
+    #domainInput {
+      flex: 1;
       padding: 6px;
-      box-sizing: border-box;
+      font-size: 12px;
       border: 1px solid #ccc;
       border-radius: 3px;
-      font-size: 12px;
+      box-sizing: border-box;
     }
-    #domain-list {
-      border: 1px solid #e0e0e0;
-      border-radius: 3px;
+    #addDomain {
+      background-color: #4CAF50;
+      color: white;
+      padding: 6px 10px;
+    }
+    #addDomain:hover {
+      background-color: #45a049;
+    }
+    #domainList {
       max-height: 150px;
       overflow-y: auto;
-      margin-top: 8px;
     }
     .domain-item {
-      padding: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 6px;
+      background-color: #f5f5f5;
+      margin-bottom: 4px;
+      border-radius: 3px;
       font-size: 12px;
     }
-    .domain-item:last-child {
-      border-bottom: none;
+    .remove-btn {
+      background-color: transparent;
+      color: #666;
+      border: none;
+      padding: 0;
+      font-size: 16px;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .domain-item button {
-      padding: 2px 6px;
-      font-size: 11px;
-      background-color: #f44336;
-      color: white;
-      width: auto;
+    .remove-btn:hover {
+      color: #f44336;
     }
     .small {
       font-family: Segoe UI, sans-serif;
@@ -78,26 +91,21 @@
       color: var(--text-secondary);
       margin-top: 8px;
     }
-    .section-title {
-      font-weight: bold;
-      font-size: 13px;
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
   </style>
 </head>
 <body>
   <button id="toggle">...</button>
   
-  <div class="section-title">Enable for specific domains</div>
-  <div class="input-group">
-    <input type="text" id="domain-input" placeholder="example.com">
-    <button id="add-domain">Add Domain</button>
+  <div class="section">
+    <div class="section-title">Automatically enable for domains:</div>
+    <div class="domain-input-group">
+      <input type="text" id="domainInput">
+      <button id="addDomain">Add</button>
+    </div>
+    <div id="domainList"></div>
   </div>
   
-  <div id="domain-list"></div>
-  
-  <p class="small">Enabling for a domain will keep the add-on active on page refreshes for that domain.</p>
+  <p class="small">💡 Enabling for a domain will keep the add-on active even after page refreshes for that domain.</p>
   
   <script src="popup.js"></script>
 </body>
