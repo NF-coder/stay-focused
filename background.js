@@ -3,7 +3,7 @@ browser.runtime.onInstalled.addListener(() => {
     if (result.enabled === undefined) {
       browser.storage.local.set({
         enabled: true,
-        domains: []
+        whitelistedDomains: []
       });
     }
   });

@@ -9,27 +9,96 @@
     }
     body {
       font-family: sans-serif;
-      min-width: 180px;
-      padding: 5px;
+      min-width: 250px;
+      padding: 8px;
+    }
+    .button-group {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
     }
     button {
-      width: 100%;
+      flex: 1;
       padding: 6px;
       font-size: 14px;
       outline: none;
       border: none;
       border-radius: 5px;
+      cursor: pointer;
+    }
+    #toggle {
+      width: 100%;
+    }
+    #add-domain {
+      background-color: #2196F3;
+      color: white;
+    }
+    #add-domain:hover {
+      background-color: #0b7dda;
+    }
+    .input-group {
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      padding: 6px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    #domain-list {
+      border: 1px solid #e0e0e0;
+      border-radius: 3px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .domain-item {
+      padding: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 12px;
+    }
+    .domain-item:last-child {
+      border-bottom: none;
+    }
+    .domain-item button {
+      padding: 2px 6px;
+      font-size: 11px;
+      background-color: #f44336;
+      color: white;
+      width: auto;
     }
     .small {
-      font-family:  Segoe UI, sans-serif;
+      font-family: Segoe UI, sans-serif;
       font-size: 0.9rem;
       color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 13px;
+      margin-top: 10px;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
   <button id="toggle">...</button>
+  
+  <div class="section-title">Enable for specific domains</div>
+  <div class="input-group">
+    <input type="text" id="domain-input" placeholder="example.com">
+    <button id="add-domain">Add Domain</button>
+  </div>
+  
+  <div id="domain-list"></div>
+  
+  <p class="small">Enabling for a domain will keep the add-on active on page refreshes for that domain.</p>
+  
   <script src="popup.js"></script>
-  <p class="small"> DO NOT FORGET TO RELOAD PAGE AFTER STATUS UPDATE!</p>
 </body>
 </html>
