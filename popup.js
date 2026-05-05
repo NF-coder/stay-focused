@@ -1,12 +1,25 @@
 const btn = document.getElementById('toggle');
-const domainInput = document.getElementById('domain-input');
-const addDomainBtn = document.getElementById('add-domain');
-const domainList = document.getElementById('domain-list');
+const domainInput = document.getElementById('domainInput');
+const addDomainBtn = document.getElementById('addDomain');
+const domainList = document.getElementById('domainList');
 
 const update = enabled => {
   btn.textContent = enabled ? 'Disable Globally' : 'Enable Globally';
   btn.style.backgroundColor = enabled ? '#4CAF50' : '#f44336';
   btn.style.color = 'white';
+};
+
+const getCurrentDomain = async () => {
+  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+  if (tabs.length > 0) {
+    try {
+      const url = new URL(tabs[0].url);
+      return url.hostname;
+    } catch {
+      return '';
+    }
+  }
+  return '';
 };
 
 const renderDomainList = async () => {
@@ -18,7 +31,7 @@ const renderDomainList = async () => {
     item.className = 'domain-item';
     item.innerHTML = `
       <span>${domain}</span>
-      <button data-domain="${domain}">Remove</button>
+      <button class="remove-btn" data-domain="${domain}">✕</button>
     `;
     item.querySelector('button').onclick = async () => {
       const updated = whitelistedDomains.filter(d => d !== domain);
@@ -31,6 +44,12 @@ const renderDomainList = async () => {
 
 browser.storage.local.get('enabled').then(({ enabled = true }) => {
   update(enabled);
+});
+
+getCurrentDomain().then(domain => {
+  if (domain) {
+    domainInput.placeholder = `e.g., ${domain}`;
+  }
 });
 
 renderDomainList();
