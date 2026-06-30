@@ -27,8 +27,23 @@ script.textContent = `
   });
 `;
 
-browser.storage.local.get('enabled').then((result) => {
-  if (result.enabled === true) {
+const shouldEnableForDomain = (whitelistedDomains) => {
+  try {
+    const currentDomain = new URL(window.location.href).hostname;
+    return whitelistedDomains.some(domain => 
+      currentDomain === domain || currentDomain.endsWith('.' + domain)
+    );
+  } catch {
+    return false;
+  }
+};
+
+browser.storage.local.get(['enabled', 'whitelistedDomains']).then((result) => {
+  const isGloballyEnabled = result.enabled === true;
+  const whitelistedDomains = result.whitelistedDomains || [];
+  const isDomainWhitelisted = shouldEnableForDomain(whitelistedDomains);
+  
+  if (isGloballyEnabled || isDomainWhitelisted) {
     (document.documentElement || document.head).appendChild(script);
     script.remove();
   }
