@@ -2,11 +2,17 @@ const btn = document.getElementById('toggle');
 const domainInput = document.getElementById('domainInput');
 const addDomainBtn = document.getElementById('addDomain');
 const domainList = document.getElementById('domainList');
+const featureSettings = document.getElementById('featureSettings');
+const blockVisibilityInput = document.getElementById('blockVisibility');
+const blockBlurInput = document.getElementById('blockBlur');
 
 const update = enabled => {
-  btn.textContent = enabled ? 'Disable Globally' : 'Enable Globally';
-  btn.style.backgroundColor = enabled ? '#4CAF50' : '#f44336';
+  btn.textContent = enabled ? 'Enabled' : 'Disabled';
+  btn.style.backgroundColor = enabled ? '#2e7d32' : '#777b80';
   btn.style.color = 'white';
+  featureSettings.classList.toggle('disabled', !enabled);
+  blockVisibilityInput.disabled = !enabled;
+  blockBlurInput.disabled = !enabled;
 };
 
 const getCurrentDomain = async () => {
@@ -42,8 +48,11 @@ const renderDomainList = async () => {
   });
 };
 
-browser.storage.local.get('enabled').then(({ enabled = true }) => {
+browser.storage.local.get(['enabled', 'blockVisibility', 'blockBlur']).then((result) => {
+  const enabled = result.enabled !== false;
   update(enabled);
+  blockVisibilityInput.checked = result.blockVisibility !== false;
+  blockBlurInput.checked = result.blockBlur !== false;
 });
 
 getCurrentDomain().then(domain => {
@@ -60,6 +69,14 @@ btn.onclick = async () => {
   
   await browser.storage.local.set({ enabled: newState });
   update(newState);
+};
+
+blockVisibilityInput.onchange = () => {
+  browser.storage.local.set({ blockVisibility: blockVisibilityInput.checked });
+};
+
+blockBlurInput.onchange = () => {
+  browser.storage.local.set({ blockBlur: blockBlurInput.checked });
 };
 
 addDomainBtn.onclick = async () => {
