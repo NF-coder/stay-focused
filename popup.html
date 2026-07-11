@@ -2,102 +2,46 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <style>
-    :root {
-      font-size: 12px;
-      --text-secondary: #8f8f8f;
-    }
-    body {
-      font-family: sans-serif;
-      min-width: 300px;
-      padding: 10px;
-    }
-    button {
-      padding: 6px 12px;
-      font-size: 14px;
-      outline: none;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #toggle {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    .section {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #ddd;
-    }
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-    .domain-input-group {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 8px;
-    }
-    #domainInput {
-      flex: 1;
-      padding: 6px;
-      font-size: 12px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      box-sizing: border-box;
-    }
-    #addDomain {
-      background-color: #4CAF50;
-      color: white;
-      padding: 6px 10px;
-    }
-    #addDomain:hover {
-      background-color: #45a049;
-    }
-    #domainList {
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    .domain-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px;
-      background-color: #f5f5f5;
-      margin-bottom: 4px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
-    .remove-btn {
-      background-color: transparent;
-      color: #666;
-      border: none;
-      padding: 0;
-      font-size: 16px;
-      cursor: pointer;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .remove-btn:hover {
-      color: #f44336;
-    }
-    .small {
-      font-family: Segoe UI, sans-serif;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-top: 8px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/controls.css" />
+  <link rel="stylesheet" href="styles/domains.css" />
 </head>
 <body>
+  <h1>Stay Focused</h1>
+  <p class="intro">Keeps pages active by hiding tab visibility changes and window focus loss from websites</p>
+
   <button id="toggle">...</button>
+
+  <div id="reloadNotice" class="reload-notice" role="status">
+    <span class="reload-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 6v5h-5" />
+        <path d="M18.5 15a7 7 0 1 1-.6-7.8L20 11" />
+      </svg>
+    </span>
+    <span class="reload-message">
+      <span class="reload-title">Settings changed</span>
+      <span class="reload-description">Reload this page to apply</span>
+    </span>
+    <button id="reloadPage">Reload</button>
+  </div>
+
+  <div id="featureSettings" class="section">
+    <div class="section-title">Blocked signals</div>
+    <div class="feature-options">
+      <label class="feature-option" title="Visibility API and visibilitychange events">
+        <input type="checkbox" id="blockVisibility">
+        <span class="feature-name">Visibility API</span>
+      </label>
+      <label class="feature-option" title="Window blur events">
+        <input type="checkbox" id="blockBlur">
+        <span class="feature-name">Blur</span>
+      </label>
+    </div>
+  </div>
   
   <div class="section">
-    <div class="section-title">Automatically enable for domains:</div>
+    <div class="section-title">Always enable on domains</div>
     <div class="domain-input-group">
       <input type="text" id="domainInput">
       <button id="addDomain">Add</button>
@@ -105,7 +49,9 @@
     <div id="domainList"></div>
   </div>
   
-  <p class="small">💡 Enabling for a domain will keep the add-on active even after page refreshes for that domain.</p>
+  <div class="section footer">
+    <a class="test-link" href="https://nf-coder.github.io/visibility-test/" target="_blank" rel="noopener noreferrer">Test extension on demo page</a>
+  </div>
   
   <script src="popup.js"></script>
 </body>

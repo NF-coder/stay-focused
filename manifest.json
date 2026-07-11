@@ -19,6 +19,9 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "background": {
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
