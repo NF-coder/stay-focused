@@ -5,6 +5,8 @@ const domainList = document.getElementById('domainList');
 const featureSettings = document.getElementById('featureSettings');
 const blockVisibilityInput = document.getElementById('blockVisibility');
 const blockBlurInput = document.getElementById('blockBlur');
+const reloadNotice = document.getElementById('reloadNotice');
+const reloadPageBtn = document.getElementById('reloadPage');
 
 const update = enabled => {
   btn.textContent = enabled ? 'Enabled' : 'Disabled';
@@ -15,17 +17,48 @@ const update = enabled => {
   blockBlurInput.disabled = !enabled;
 };
 
-const getCurrentDomain = async () => {
+const getActiveTab = async () => {
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-  if (tabs.length > 0) {
+  return tabs[0] || null;
+};
+
+const getCurrentDomain = async () => {
+  const tab = await getActiveTab();
+  if (tab) {
     try {
-      const url = new URL(tabs[0].url);
+      const url = new URL(tab.url);
       return url.hostname;
     } catch {
       return '';
     }
   }
   return '';
+};
+
+const markPendingReload = async (tabId) => {
+  const { pendingReloadTabs = [] } = await browser.storage.local.get('pendingReloadTabs');
+  if (pendingReloadTabs.includes(tabId)) return;
+
+  await browser.storage.local.set({ pendingReloadTabs: [...pendingReloadTabs, tabId] });
+};
+
+const markCurrentTabForReload = async () => {
+  const tab = await getActiveTab();
+  if (!tab?.id) return;
+
+  await markPendingReload(tab.id);
+  reloadNotice.classList.add('visible');
+};
+
+const updateReloadNotice = async () => {
+  const tab = await getActiveTab();
+  if (!tab?.id) {
+    reloadNotice.classList.remove('visible');
+    return;
+  }
+
+  const { pendingReloadTabs = [] } = await browser.storage.local.get('pendingReloadTabs');
+  reloadNotice.classList.toggle('visible', pendingReloadTabs.includes(tab.id));
 };
 
 const renderDomainList = async () => {
@@ -42,6 +75,7 @@ const renderDomainList = async () => {
     item.querySelector('button').onclick = async () => {
       const updated = whitelistedDomains.filter(d => d !== domain);
       await browser.storage.local.set({ whitelistedDomains: updated });
+      await markCurrentTabForReload();
       renderDomainList();
     };
     domainList.appendChild(item);
@@ -62,21 +96,37 @@ getCurrentDomain().then(domain => {
 });
 
 renderDomainList();
+updateReloadNotice();
+
+browser.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.pendingReloadTabs) {
+    updateReloadNotice();
+  }
+});
 
 btn.onclick = async () => {
   const { enabled = true } = await browser.storage.local.get('enabled');
   const newState = !enabled;
   
   await browser.storage.local.set({ enabled: newState });
+  await markCurrentTabForReload();
   update(newState);
 };
 
-blockVisibilityInput.onchange = () => {
-  browser.storage.local.set({ blockVisibility: blockVisibilityInput.checked });
+blockVisibilityInput.onchange = async () => {
+  await browser.storage.local.set({ blockVisibility: blockVisibilityInput.checked });
+  await markCurrentTabForReload();
 };
 
-blockBlurInput.onchange = () => {
-  browser.storage.local.set({ blockBlur: blockBlurInput.checked });
+blockBlurInput.onchange = async () => {
+  await browser.storage.local.set({ blockBlur: blockBlurInput.checked });
+  await markCurrentTabForReload();
+};
+
+reloadPageBtn.onclick = async () => {
+  const tab = await getActiveTab();
+  if (tab?.id) await browser.tabs.reload(tab.id);
+  window.close();
 };
 
 addDomainBtn.onclick = async () => {
@@ -96,6 +146,7 @@ addDomainBtn.onclick = async () => {
   
   whitelistedDomains.push(domain);
   await browser.storage.local.set({ whitelistedDomains });
+  await markCurrentTabForReload();
   
   domainInput.value = '';
   renderDomainList();

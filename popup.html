@@ -2,170 +2,29 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <style>
-    :root {
-      font-size: 12px;
-      --accent: #2e7d32;
-      --border: #e2e5e9;
-      --surface: #f6f7f8;
-      --text: #202124;
-      --text-secondary: #6b7075;
-    }
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-width: 310px;
-      margin: 0;
-      padding: 14px;
-      color: var(--text);
-    }
-    h1 {
-      margin: 0 0 4px;
-      font-size: 17px;
-      line-height: 1.2;
-    }
-    .intro {
-      margin: 0 0 12px;
-      color: var(--text-secondary);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    button {
-      padding: 6px 12px;
-      font-size: 14px;
-      outline: none;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #toggle {
-      width: 100%;
-      font-weight: 600;
-      transition: background-color 0.15s ease;
-    }
-    .feature-option {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      flex: 1;
-      min-height: 34px;
-      padding: 0 8px;
-      box-sizing: border-box;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .feature-option input {
-      margin: 0;
-      accent-color: var(--accent);
-    }
-    .feature-options {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .feature-name {
-      font-size: 13px;
-    }
-    #featureSettings.disabled {
-      opacity: 0.5;
-    }
-    .section {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-    .section-title {
-      font-weight: 600;
-      margin-bottom: 7px;
-      font-size: 13px;
-    }
-    .domain-input-group {
-      display: flex;
-      gap: 5px;
-      margin-bottom: 8px;
-    }
-    #domainInput {
-      flex: 1;
-      padding: 6px;
-      font-size: 12px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    #addDomain {
-      background-color: var(--accent);
-      color: white;
-      padding: 6px 10px;
-    }
-    #addDomain:hover {
-      background-color: #45a049;
-    }
-    #domainList {
-      max-height: 150px;
-      overflow-y: auto;
-    }
-    .domain-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px;
-      background-color: #f5f5f5;
-      margin-bottom: 4px;
-      border-radius: 3px;
-      font-size: 12px;
-    }
-    .remove-btn {
-      background-color: transparent;
-      color: #666;
-      border: none;
-      padding: 0;
-      font-size: 16px;
-      cursor: pointer;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .remove-btn:hover {
-      color: #f44336;
-    }
-    .small {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin: 7px 0 0;
-      line-height: 1.35;
-    }
-    .footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .footer .small {
-      margin: 0;
-    }
-    .test-link {
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .test-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/controls.css" />
+  <link rel="stylesheet" href="styles/domains.css" />
 </head>
 <body>
   <h1>Stay Focused</h1>
   <p class="intro">Keeps pages active by hiding tab visibility changes and window focus loss from websites</p>
 
   <button id="toggle">...</button>
+
+  <div id="reloadNotice" class="reload-notice" role="status">
+    <span class="reload-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 6v5h-5" />
+        <path d="M18.5 15a7 7 0 1 1-.6-7.8L20 11" />
+      </svg>
+    </span>
+    <span class="reload-message">
+      <span class="reload-title">Settings changed</span>
+      <span class="reload-description">Reload this page to apply</span>
+    </span>
+    <button id="reloadPage">Reload</button>
+  </div>
 
   <div id="featureSettings" class="section">
     <div class="section-title">Blocked signals</div>
@@ -191,8 +50,7 @@
   </div>
   
   <div class="section footer">
-    <span class="small">Reload the page to apply changes</span>
-    <a class="test-link" href="https://nf-coder.github.io/visibility-test/" target="_blank" rel="noopener noreferrer">Open test page ↗</a>
+    <a class="test-link" href="https://nf-coder.github.io/visibility-test/" target="_blank" rel="noopener noreferrer">Test extension on demo page</a>
   </div>
   
   <script src="popup.js"></script>

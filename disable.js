@@ -13,7 +13,8 @@ browser.storage.local.get([
   'enabled',
   'blockVisibility',
   'blockBlur',
-  'whitelistedDomains'
+  'whitelistedDomains',
+  'pendingReloadTabs'
 ]).then((result) => {
   const isGloballyEnabled = result.enabled === true;
 
@@ -21,8 +22,9 @@ browser.storage.local.get([
   const blockBlur = result.blockBlur !== false;
   const whitelistedDomains = result.whitelistedDomains || [];
   const isDomainWhitelisted = shouldEnableForDomain(whitelistedDomains);
+  const isActive = isGloballyEnabled || isDomainWhitelisted;
 
-  if ((isGloballyEnabled || isDomainWhitelisted) && (blockVisibility || blockBlur)) {
+  if (isActive && (blockVisibility || blockBlur)) {
     const script = document.createElement('script');
     script.textContent = `
       if (${blockVisibility}) {
@@ -56,5 +58,9 @@ browser.storage.local.get([
 
     (document.documentElement || document.head).appendChild(script);
     script.remove();
+  }
+
+  if ((result.pendingReloadTabs || []).length > 0) {
+    browser.runtime.sendMessage({ type: 'settingsApplied' });
   }
 });
