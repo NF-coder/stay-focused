@@ -7,8 +7,8 @@ Just download it from https://addons.mozilla.org/en-US/firefox/addon/stay-focuse
 
 ## Features
 - Disables `document.hidden`, `document.visibilityState`, and `document.webkitHidden`
-- Blocks `visibilitychange`, `webkitvisibilitychange`, `blur`, and `focus` events
-- Simple toggle interface with visual feedback
+- Independently blocks Visibility API changes and `blur` events
+- Master toggle with separate controls for each protection
 
 ## Icon Attribution
 The extension icon is a derivative of ["Eye SVG Vector"](https://www.svgrepo.com/svg/501558/eye) from the Instructure UI Line Interface Icons collection, used under the MIT License.
