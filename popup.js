@@ -50,6 +50,13 @@ const markCurrentTabForReload = async () => {
   reloadNotice.classList.add('visible');
 };
 
+const markMatchingTabForReload = async (ruleDomain) => {
+  const currentDomain = await getCurrentDomain();
+  if (currentDomain === ruleDomain || currentDomain.endsWith('.' + ruleDomain)) {
+    await markCurrentTabForReload();
+  }
+};
+
 const updateReloadNotice = async () => {
   const tab = await getActiveTab();
   if (!tab?.id) {
@@ -61,23 +68,78 @@ const updateReloadNotice = async () => {
   reloadNotice.classList.toggle('visible', pendingReloadTabs.includes(tab.id));
 };
 
+const RULE_STATES = ['block', 'inherit', 'allow'];
+const RULE_LABELS = { block: 'Deny', inherit: 'Global', allow: 'Allow' };
+
+const nextRuleState = (current) => {
+  const index = RULE_STATES.indexOf(current);
+  return RULE_STATES[(index + 1) % RULE_STATES.length];
+};
+
 const renderDomainList = async () => {
-  const { whitelistedDomains = [] } = await browser.storage.local.get('whitelistedDomains');
+  const { domainRules = [] } = await browser.storage.local.get('domainRules');
   domainList.innerHTML = '';
-  
-  whitelistedDomains.forEach(domain => {
+
+  domainRules.forEach(rule => {
     const item = document.createElement('div');
     item.className = 'domain-item';
-    item.innerHTML = `
-      <span>${domain}</span>
-      <button class="remove-btn" data-domain="${domain}">✕</button>
-    `;
-    item.querySelector('button').onclick = async () => {
-      const updated = whitelistedDomains.filter(d => d !== domain);
-      await browser.storage.local.set({ whitelistedDomains: updated });
-      await markCurrentTabForReload();
+
+    const domain = document.createElement('span');
+    domain.className = 'rule-domain';
+    domain.textContent = rule.domain;
+
+    const createRuleToggle = (api, label) => {
+      const state = rule[api] || 'inherit';
+      const toggle = document.createElement('button');
+      toggle.className = 'rule-toggle';
+      toggle.type = 'button';
+      toggle.title = `${label}: ${RULE_LABELS[state]}`;
+      toggle.setAttribute('aria-label', `${label}: ${RULE_LABELS[state]}`);
+
+      const dot = document.createElement('span');
+      dot.className = `rule-dot ${state}`;
+      toggle.appendChild(dot);
+
+      toggle.onclick = async () => {
+        const updated = domainRules.map(item =>
+          item.domain === rule.domain
+            ? { ...item, [api]: nextRuleState(state) }
+            : item
+        );
+        await browser.storage.local.set({ domainRules: updated });
+        await markMatchingTabForReload(rule.domain);
+        renderDomainList();
+      };
+
+      return toggle;
+    };
+
+    const blurToggle = createRuleToggle('blur', 'Blur');
+    const visibilityToggle = createRuleToggle('visibility', 'Visibility API');
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.type = 'button';
+    removeBtn.setAttribute('aria-label', `Remove rule for ${rule.domain}`);
+
+    const removeIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    removeIcon.setAttribute('viewBox', '0 0 24 24');
+    removeIcon.setAttribute('aria-hidden', 'true');
+
+    const removePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    removePath.setAttribute('d', 'M6 6l12 12M18 6L6 18');
+    removeIcon.appendChild(removePath);
+    removeBtn.appendChild(removeIcon);
+
+    removeBtn.onclick = async (event) => {
+      event.stopPropagation();
+      const updated = domainRules.filter(item => item.domain !== rule.domain);
+      await browser.storage.local.set({ domainRules: updated });
+      await markMatchingTabForReload(rule.domain);
       renderDomainList();
     };
+
+    item.append(domain, blurToggle, visibilityToggle, removeBtn);
     domainList.appendChild(item);
   });
 };
@@ -91,7 +153,7 @@ browser.storage.local.get(['enabled', 'blockVisibility', 'blockBlur']).then((res
 
 getCurrentDomain().then(domain => {
   if (domain) {
-    domainInput.placeholder = `e.g., ${domain}`;
+    domainInput.value = domain;
   }
 });
 
@@ -130,24 +192,34 @@ reloadPageBtn.onclick = async () => {
 };
 
 addDomainBtn.onclick = async () => {
-  const domain = domainInput.value.trim().toLowerCase();
-  
-  if (!domain) {
-    alert('Please enter a domain');
+  const rawDomain = domainInput.value.trim().toLowerCase();
+  let domain;
+
+  try {
+    const value = rawDomain.includes('://') ? rawDomain : `http://${rawDomain}`;
+    domain = new URL(value).hostname;
+  } catch {
+    domain = '';
+  }
+
+  if (!domain || domain.includes(' ')) {
+    alert('Please enter a valid domain');
     return;
   }
-  
-  const { whitelistedDomains = [] } = await browser.storage.local.get('whitelistedDomains');
-  
-  if (whitelistedDomains.includes(domain)) {
-    alert('Domain already whitelisted');
+
+  const { domainRules = [] } = await browser.storage.local.get('domainRules');
+  if (domainRules.some(item => item.domain === domain)) {
+    alert('A rule for this domain already exists');
     return;
   }
-  
-  whitelistedDomains.push(domain);
-  await browser.storage.local.set({ whitelistedDomains });
-  await markCurrentTabForReload();
-  
+
+  const updated = [
+    ...domainRules,
+    { domain, visibility: 'allow', blur: 'allow' }
+  ];
+
+  await browser.storage.local.set({ domainRules: updated });
+
   domainInput.value = '';
   renderDomainList();
 };
