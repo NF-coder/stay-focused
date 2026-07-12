@@ -1,30 +1,41 @@
-const shouldEnableForDomain = (whitelistedDomains) => {
+const findMatchingRule = (rules) => {
   try {
     const currentDomain = new URL(window.location.href).hostname;
-    return whitelistedDomains.some(domain => 
-      currentDomain === domain || currentDomain.endsWith('.' + domain)
-    );
+    return rules
+      .filter(rule =>
+        currentDomain === rule.domain || currentDomain.endsWith('.' + rule.domain)
+      )
+      .sort((a, b) => b.domain.length - a.domain.length)[0] || null;
   } catch {
-    return false;
+    return null;
   }
+};
+
+const resolveRule = (globalValue, ruleValue) => {
+  if (ruleValue === 'block') return true;
+  if (ruleValue === 'allow') return false;
+  return globalValue;
 };
 
 browser.storage.local.get([
   'enabled',
   'blockVisibility',
   'blockBlur',
-  'whitelistedDomains',
+  'domainRules',
   'pendingReloadTabs'
 ]).then((result) => {
   const isGloballyEnabled = result.enabled === true;
+  const matchingRule = findMatchingRule(result.domainRules || []);
+  const blockVisibility = resolveRule(
+    isGloballyEnabled && result.blockVisibility !== false,
+    matchingRule?.visibility
+  );
+  const blockBlur = resolveRule(
+    isGloballyEnabled && result.blockBlur !== false,
+    matchingRule?.blur
+  );
 
-  const blockVisibility = result.blockVisibility !== false;
-  const blockBlur = result.blockBlur !== false;
-  const whitelistedDomains = result.whitelistedDomains || [];
-  const isDomainWhitelisted = shouldEnableForDomain(whitelistedDomains);
-  const isActive = isGloballyEnabled || isDomainWhitelisted;
-
-  if (isActive && (blockVisibility || blockBlur)) {
+  if (blockVisibility || blockBlur) {
     const script = document.createElement('script');
     script.textContent = `
       if (${blockVisibility}) {

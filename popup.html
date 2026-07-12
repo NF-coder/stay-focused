@@ -41,12 +41,23 @@
   </div>
   
   <div class="section">
-    <div class="section-title">Always enable on domains</div>
+    <div class="section-title">Domain rules</div>
     <div class="domain-input-group">
-      <input type="text" id="domainInput">
+      <input type="text" id="domainInput" placeholder="e.g., example.com">
       <button id="addDomain">Add</button>
     </div>
+    <div class="rules-header" aria-hidden="true">
+      <span>Domain</span>
+      <span>Blur</span>
+      <span>Visibility API</span>
+      <span></span>
+    </div>
     <div id="domainList"></div>
+    <div class="rules-legend">
+      <span><i class="rule-dot allow"></i>Allow</span>
+      <span><i class="rule-dot inherit"></i>Global</span>
+      <span><i class="rule-dot block"></i>Deny</span>
+    </div>
   </div>
   
   <div class="section footer">

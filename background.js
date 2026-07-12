@@ -3,6 +3,7 @@ browser.runtime.onInstalled.addListener(() => {
     'enabled',
     'blockVisibility',
     'blockBlur',
+    'domainRules',
     'whitelistedDomains'
   ]).then((result) => {
     const defaults = {};
@@ -10,12 +11,18 @@ browser.runtime.onInstalled.addListener(() => {
     if (result.enabled === undefined) defaults.enabled = true;
     if (result.blockVisibility === undefined) defaults.blockVisibility = true;
     if (result.blockBlur === undefined) defaults.blockBlur = true;
-    if (result.whitelistedDomains === undefined) defaults.whitelistedDomains = [];
+    if (result.domainRules === undefined) {
+      defaults.domainRules = (result.whitelistedDomains || []).map(domain => ({
+        domain,
+        visibility: 'block',
+        blur: 'block'
+      }));
+    }
     defaults.pendingReloadTabs = [];
 
-    if (Object.keys(defaults).length > 0) {
-      browser.storage.local.set(defaults);
-    }
+    browser.storage.local.set(defaults).then(() => {
+      browser.storage.local.remove('whitelistedDomains');
+    });
   });
 });
 
