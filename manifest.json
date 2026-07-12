@@ -1,10 +1,9 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "Stay Focused - Disable Visibility API",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "Forces document to stay visible via disable visibility API",
-  "permissions": ["storage"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": ["storage", "<all_urls>"],
   "homepage_url": "https://github.com/NF-coder/stay-focused",
   
   "browser_specific_settings": {
@@ -16,8 +15,11 @@
     }
   },
 
-  "action": {
+  "browser_action": {
     "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
