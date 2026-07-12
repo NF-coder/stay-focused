@@ -1,3 +1,9 @@
+## 1.0.0-rc1 (2026-07-12)
+
+### Fix
+
+- **manifest.json**: update version in mainfest
+
 ## 1.0.0-rc0 (2026-07-12)
 
 ### Feat
