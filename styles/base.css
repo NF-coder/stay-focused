@@ -59,3 +59,12 @@ button {
 .test-link:hover {
   text-decoration: underline;
 }
+
+.test-link:first-child {
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+}
+
+.test-link:last-child {
+  padding-left: 12px;
+}
